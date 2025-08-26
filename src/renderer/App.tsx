@@ -3,7 +3,7 @@ import { MemoryRouter as Router } from 'react-router-dom';
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
-import './App.css';
+import './App.css'; // Ensure this is the correct path
 
 const DEFAULT_SERVER = 'http://localhost:8000';
 const INITIAL_PROMPT = "Hello! I'm your Chat Ally here to assist you. How can I help you today?";

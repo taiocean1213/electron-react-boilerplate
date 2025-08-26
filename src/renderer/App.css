@@ -27,73 +27,37 @@ body {
   background: inherit;
 }
 
-button {
-  padding: 10px 20px;
-  border-radius: 12px;
-  border: none;
-  font-size: 1.1rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  cursor: pointer;
-  opacity: 0.95;
-}
-
-button:hover {
-  transform: translateY(-2px);
-  opacity: 1;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-li {
-  list-style: none;
-}
-
-a {
-  text-decoration: none;
-  height: fit-content;
-  width: fit-content;
-  margin: 10px;
-}
-
-a:hover {
-  opacity: 1;
-  text-decoration: underline;
-}
-
-.Hello {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 0;
-}
-
-.server-card {
-  min-width: 360px;
+.card {
   background: #ffffff;
-  color: #2c1b4a;
-  border-radius: 16px;
+  border-radius: 20px;
   border: 1px solid #e0d4f8;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
   transition: transform 0.3s ease;
 }
 
-.server-card:hover {
+.card:hover {
   transform: translateY(-4px);
 }
 
-.address-input {
-  margin-bottom: 16px;
-  width: 100%;
-  background: #f8f5ff;
-  border: 1px solid #d4c9f0;
-  border-radius: 8px;
+.card-header {
+  padding: 20px 24px 8px 24px;
+  border-bottom: 1px solid #e0d4f8;
 }
 
-.address-btn {
-  width: 100%;
-  background: linear-gradient(90deg, #a78bfa 0%, #60a5fa 100%);
-  color: #fff;
-  font-weight: 600;
+.card-title {
+  font-size: 1.5em;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+}
+
+.card-content {
+  padding: 16px 24px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .chat-root {
@@ -179,12 +143,19 @@ a:hover {
 .chat-input {
   flex: 1;
   background: #f8f5ff;
-  color: #2c1b4a;
   border: 1px solid #d4c9f0;
   border-radius: 8px;
+  color: #2c1b4a;
+  outline: none;
 }
 
 .send-btn {
+  background: linear-gradient(90deg, #a78bfa 0%, #60a5fa 100%);
+  color: #fff;
+  font-weight: 600;
+}
+
+.address-btn {
   background: linear-gradient(90deg, #a78bfa 0%, #60a5fa 100%);
   color: #fff;
   font-weight: 600;

@@ -2,11 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { MemoryRouter as Router } from 'react-router-dom';
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import './App.css';
 
 const DEFAULT_SERVER = 'http://localhost:8000';
-const INITIAL_PROMPT = "Greet the user and ask how you can assist them today.";
+const INITIAL_PROMPT = "Hello! I'm your Chat Ally here to assist you. How can I help you today?";
 
 type Message = { role: 'user' | 'llm', content: string };
 
@@ -21,18 +21,15 @@ function ChatApp() {
   const [model, setModel] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom on new message
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Check connection on mount or server change
   useEffect(() => {
     setConnected(null);
     setErrorMsg(null);
     setModel(null);
 
-    // Try /api/v1/models, then /api/v1/health if 404
     const tryHealth = async () => {
       let ok = false;
       let error = "";
@@ -56,7 +53,7 @@ function ChatApp() {
             try { body = await res.text(); } catch {}
             error = `Server responded with status ${res.status} ${res.statusText} at ${endpoint}` +
               (body ? `\n${body}` : "");
-            if (res.status !== 404) break; // Only try next if 404
+            if (res.status !== 404) break;
           }
         } catch (err: any) {
           error = `Could not connect: ${err.message}`;
@@ -75,16 +72,12 @@ function ChatApp() {
     tryHealth();
   }, [server]);
 
-  // On connect, send initial prompt (hidden from UI)
   useEffect(() => {
-    if (connected) {
-      if (model) {
-        sendMessage(INITIAL_PROMPT, true);
-      } else {
-        setMessages([{ role: 'llm', content: "⚠️ No models available on the server. Please configure the Lemonade server with at least one model." }]);
-      }
+    if (connected && model) {
+      sendMessage(INITIAL_PROMPT, true);
+    } else if (connected && !model) {
+      setMessages([{ role: 'llm', content: "⚠️ No models available on the server. Please configure the Lemonade server with at least one model." }]);
     }
-    // eslint-disable-next-line
   }, [connected, model]);
 
   function handleAddressSubmit(e: React.FormEvent) {
@@ -116,9 +109,7 @@ function ChatApp() {
       }),
     })
       .then(res => {
-        if (!res.ok) {
-          throw new Error(`Server error: ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
         return res.json();
       })
       .then(data => {
@@ -133,37 +124,36 @@ function ChatApp() {
 
   function handleReset() {
     setMessages([]);
-    setTimeout(() => {
-      sendMessage(INITIAL_PROMPT, true);
-    }, 100);
+    setTimeout(() => sendMessage(INITIAL_PROMPT, true), 100);
   }
 
   function handleRetry() {
     setServer(addressInput);
   }
 
-  // UI
   if (connected === false) {
     return (
       <div className="centered error-bg">
         <Card className="server-card">
           <CardHeader>
-            <CardTitle>Cannot connect to Lemonade LLM server</CardTitle>
+            <CardTitle>Cannot connect to Chat Ally server</CardTitle>
           </CardHeader>
           <CardContent>
             <p>
               {errorMsg
                 ? <span style={{ color: "#f87171", whiteSpace: "pre-wrap" }}>{errorMsg}</span>
-                : "Please start the Lemonade server, or enter the correct address below."}
+                : "Please start the Chat Ally server, or enter the correct address below."}
             </p>
             <form onSubmit={handleAddressSubmit} style={{ marginTop: 16 }}>
               <Input
                 value={addressInput}
                 onChange={e => setAddressInput(e.target.value)}
                 placeholder="http://localhost:8000"
-                className="address-input"
+                className="chat-input"
               />
-              <Button type="submit" className="address-btn" variant="secondary">Set Address</Button>
+              <Button type="submit" variant="secondary" className="address-btn">
+                Set Address
+              </Button>
             </form>
             <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
               <Button style={{ flex: 1 }} onClick={handleRetry} variant="outline">
@@ -193,7 +183,7 @@ function ChatApp() {
       <div className="centered error-bg">
         <Card className="server-card">
           <CardHeader>
-            <CardTitle>Connecting to Lemonade LLM server...</CardTitle>
+            <CardTitle>Connecting to Chat Ally server...</CardTitle>
           </CardHeader>
           <CardContent>
             <p>Trying <b>{server}</b></p>
@@ -203,20 +193,19 @@ function ChatApp() {
     );
   }
 
-  // Chat UI
   return (
     <div className="chat-root">
       <Card className="chat-card">
         <CardHeader>
           <CardTitle>
-            <span className="logo">⚡</span> Lemonade LLM Chat
+            <span className="logo">🤖</span> Chat Ally
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="chat-messages">
             {messages.map((msg, i) => (
               <div key={i} className={`chat-msg ${msg.role}`}>
-                <span className="role">{msg.role === 'user' ? 'You' : 'LLM'}</span>
+                <span className="role">{msg.role === 'user' ? 'You' : 'Ally'}</span>
                 <span className="content">{msg.content}</span>
               </div>
             ))}
@@ -231,10 +220,10 @@ function ChatApp() {
               className="chat-input"
               autoFocus
             />
-            <Button type="submit" disabled={loading || !input.trim() || !model} className="send-btn">
+            <Button type="submit" disabled={loading || !input.trim() || !model} variant="default">
               {loading ? '...' : 'Send'}
             </Button>
-            <Button type="button" variant="outline" onClick={handleReset} className="reset-btn">
+            <Button type="button" variant="outline" onClick={handleReset}>
               Reset
             </Button>
           </form>

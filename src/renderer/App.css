@@ -2,6 +2,13 @@
  * @NOTE: Prepend a `~` to css file paths that are in your node_modules
  *        See https://github.com/webpack-contrib/sass-loader#imports
  */
+body, html, #root {
+  height: 100%;
+  margin: 0;
+  background: linear-gradient(135deg, #181c24 0%, #232b3a 100%);
+  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+}
+
 body {
   position: relative;
   color: white;
@@ -17,6 +24,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.centered {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: inherit;
 }
 
 button {
@@ -59,4 +74,113 @@ a:hover {
   justify-content: center;
   align-items: center;
   margin: 20px 0;
+}
+
+.server-card {
+  min-width: 340px;
+  background: #232b3a;
+  color: #fff;
+  border: 1px solid #2e3545;
+  box-shadow: 0 4px 24px #000a;
+}
+
+.address-input {
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.address-btn {
+  width: 100%;
+}
+
+.chat-root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: inherit;
+}
+
+.chat-card {
+  width: 420px;
+  min-height: 600px;
+  background: #232b3a;
+  color: #fff;
+  border: 1px solid #2e3545;
+  box-shadow: 0 4px 24px #000a;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages {
+  max-height: 350px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+  padding: 8px 0;
+  background: #1a1e27;
+  border-radius: 8px;
+}
+
+.chat-msg {
+  margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-msg.user .role {
+  color: #7dd3fc;
+  font-weight: 600;
+}
+
+.chat-msg.llm .role {
+  color: #facc15;
+  font-weight: 600;
+}
+
+.chat-msg .content {
+  margin-left: 8px;
+  font-size: 1rem;
+  word-break: break-word;
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chat-input {
+  flex: 1;
+  background: #181c24;
+  color: #fff;
+  border: 1px solid #2e3545;
+}
+
+.send-btn {
+  background: linear-gradient(90deg, #7dd3fc 0%, #facc15 100%);
+  color: #232b3a;
+  font-weight: bold;
+}
+
+.reset-btn {
+  border: 1px solid #facc15;
+  color: #facc15;
+  background: transparent;
+}
+
+.logo {
+  font-size: 1.4em;
+  margin-right: 6px;
+}
+
+.error-bg {
+  background: #181c24 !important;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

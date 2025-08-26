@@ -71,10 +71,12 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
-    height: 728,
+    width: 800, // Adjusted for chat UI
+    height: 600, // Adjusted for chat UI
     icon: getAssetPath('icon.png'),
     webPreferences: {
+      nodeIntegration: false, // Ensure security
+      contextIsolation: true, // Required for Shadcn and modern Electron
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
@@ -107,8 +109,7 @@ const createWindow = async () => {
     return { action: 'deny' };
   });
 
-  // Remove this if your app does not use auto updates
-  // eslint-disable-next-line
+  // Initialize auto-updater
   new AppUpdater();
 };
 

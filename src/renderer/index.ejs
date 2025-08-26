@@ -7,6 +7,13 @@
       content="script-src 'self' 'unsafe-inline'"
     />
     <title>Hello Electron React!</title>
+    <%-
+      /**
+       * This ensures the output file is named index.html
+       * when processed by html-webpack-plugin.
+       */
+      htmlWebpackPlugin.options.filename = 'index.html'
+    %>
   </head>
   <body>
     <div id="root"></div>

@@ -71,8 +71,10 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 800, // Adjusted for chat UI
-    height: 600, // Adjusted for chat UI
+    width: 520,
+    height: 700,
+    minWidth: 520,
+    minHeight: 700,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       nodeIntegration: false, // Ensure security
@@ -82,7 +84,8 @@ const createWindow = async () => {
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });
-
+  
+  mainWindow.setMenuBarVisibility(false)
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
   mainWindow.on('ready-to-show', () => {

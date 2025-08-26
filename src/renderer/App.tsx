@@ -215,7 +215,7 @@ function ChatApp() {
             <Input
               value={input}
               onChange={handleInput}
-              placeholder="Type your message..."
+              placeholder="  Type your message..."
               disabled={loading || !model}
               className="chat-input"
               autoFocus

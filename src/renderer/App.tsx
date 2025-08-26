@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card"
 import './App.css';
 
 const DEFAULT_SERVER = 'http://localhost:8000';
-const INITIAL_PROMPT = "Hello! Let's get to know each other. How can I assist you today?";
+const INITIAL_PROMPT = "Greet the user and ask how you can assist them today.";
 
 type Message = { role: 'user' | 'llm', content: string };
 
@@ -18,6 +18,7 @@ function ChatApp() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [model, setModel] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Scroll to bottom on new message
@@ -29,40 +30,62 @@ function ChatApp() {
   useEffect(() => {
     setConnected(null);
     setErrorMsg(null);
-    fetch(`${server}/v1/models`)
-      .then(async res => {
-        if (res.ok) {
-          setConnected(true);
-        } else {
-          let body = "";
-          try {
-            body = await res.text();
-          } catch {}
-          setConnected(false);
-          setErrorMsg(
-            `Server responded with status ${res.status} ${res.statusText}` +
-            (body ? `\n${body}` : "") +
-            (res.status === 404 ? " (endpoint not found, check Lemonade server URL and version)" : "")
-          );
+    setModel(null);
+
+    // Try /api/v1/models, then /api/v1/health if 404
+    const tryHealth = async () => {
+      let ok = false;
+      let error = "";
+      let foundModel = null;
+      for (const endpoint of ["/api/v1/models", "/api/v1/health"]) {
+        try {
+          const res = await fetch(`${server}${endpoint}`);
+          if (res.ok) {
+            ok = true;
+            if (endpoint === "/api/v1/models") {
+              try {
+                const data = await res.json();
+                if (data && Array.isArray(data.data) && data.data.length > 0) {
+                  foundModel = data.data[0].id;
+                }
+              } catch {}
+            }
+            break;
+          } else {
+            let body = "";
+            try { body = await res.text(); } catch {}
+            error = `Server responded with status ${res.status} ${res.statusText} at ${endpoint}` +
+              (body ? `\n${body}` : "");
+            if (res.status !== 404) break; // Only try next if 404
+          }
+        } catch (err: any) {
+          error = `Could not connect: ${err.message}`;
+          break;
         }
-      })
-      .catch((err) => {
+      }
+      if (ok) {
+        setConnected(true);
+        if (foundModel) setModel(foundModel);
+      } else {
         setConnected(false);
-        setErrorMsg(`Could not connect: ${err.message}`);
-        // Log full error for debugging
-        // eslint-disable-next-line no-console
-        console.error("Lemonade connection error:", err);
-      });
+        setErrorMsg(error + "\nTried endpoints: /api/v1/models, /api/v1/health");
+      }
+    };
+
+    tryHealth();
   }, [server]);
 
-  // On connect, send initial prompt
+  // On connect, send initial prompt (hidden from UI)
   useEffect(() => {
     if (connected) {
-      setMessages([{ role: 'user', content: INITIAL_PROMPT }]);
-      sendMessage(INITIAL_PROMPT, true);
+      if (model) {
+        sendMessage(INITIAL_PROMPT, true);
+      } else {
+        setMessages([{ role: 'llm', content: "⚠️ No models available on the server. Please configure the Lemonade server with at least one model." }]);
+      }
     }
     // eslint-disable-next-line
-  }, [connected]);
+  }, [connected, model]);
 
   function handleAddressSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -75,7 +98,7 @@ function ChatApp() {
 
   function handleSend(e?: React.FormEvent) {
     if (e) e.preventDefault();
-    if (!input.trim()) return;
+    if (!input.trim() || !model) return;
     setMessages(msgs => [...msgs, { role: 'user', content: input }]);
     sendMessage(input);
     setInput('');
@@ -83,18 +106,27 @@ function ChatApp() {
 
   function sendMessage(prompt: string, isInitial = false) {
     setLoading(true);
-    fetch(`${server}/v1/chat/completions`, {
+    fetch(`${server}/api/v1/chat/completions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] }),
+      body: JSON.stringify({
+        model: model || "",
+        messages: [{ role: 'user', content: prompt }],
+        stream: false,
+      }),
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`Server error: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
         const llmMsg = data?.choices?.[0]?.message?.content || "No response.";
         setMessages(msgs => [...msgs, { role: 'llm', content: llmMsg }]);
       })
-      .catch(() => {
-        setMessages(msgs => [...msgs, { role: 'llm', content: "⚠️ Error: Could not reach LLM server." }]);
+      .catch((err) => {
+        setMessages(msgs => [...msgs, { role: 'llm', content: `⚠️ Error: Could not reach LLM server. ${err.message}` }]);
       })
       .finally(() => setLoading(false));
   }
@@ -102,7 +134,6 @@ function ChatApp() {
   function handleReset() {
     setMessages([]);
     setTimeout(() => {
-      setMessages([{ role: 'user', content: INITIAL_PROMPT }]);
       sendMessage(INITIAL_PROMPT, true);
     }, 100);
   }
@@ -196,11 +227,11 @@ function ChatApp() {
               value={input}
               onChange={handleInput}
               placeholder="Type your message..."
-              disabled={loading}
+              disabled={loading || !model}
               className="chat-input"
               autoFocus
             />
-            <Button type="submit" disabled={loading || !input.trim()} className="send-btn">
+            <Button type="submit" disabled={loading || !input.trim() || !model} className="send-btn">
               {loading ? '...' : 'Send'}
             </Button>
             <Button type="button" variant="outline" onClick={handleReset} className="reset-btn">

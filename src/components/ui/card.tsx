@@ -4,7 +4,9 @@ export const Card: React.FC<{ className?: string; children: React.ReactNode }> =
   className = "",
   children,
 }) => (
-  <div className={`card ${className}`}>
+  <div
+    className={`card ${className}`} // Use 'card' class from App.css
+  >
     {children}
   </div>
 );

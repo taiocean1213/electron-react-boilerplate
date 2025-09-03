@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import './App.css'; // Ensure this is the correct path
 
 const DEFAULT_SERVER = 'http://localhost:8000';
-const INITIAL_PROMPT = "Hello! I'm your Chat Ally here to assist you. How can I help you today?";
+const INITIAL_PROMPT = "Hello! you will be a Chat Ally Asker here to assist the user by generating clarification questions for the user. Please help the user by asking clarifying questions to better understand their needs.";
 
 type Message = { role: 'user' | 'llm', content: string };
 
@@ -92,8 +92,13 @@ function ChatApp() {
   function handleSend(e?: React.FormEvent) {
     if (e) e.preventDefault();
     if (!input.trim() || !model) return;
+
+    // Now add the multilined engineered prompt to messages
+    modifiedPrompt = `
+      Please help me generate 5 questions to clarify the following. This is so that the user can generate better decisions. Only generate the questions and put each into a new lines. DO NOT generate statements. You should EXPLAIN the reason for asking the questions. Assume the following is what the user inputed and told you to respond to: \`\`\`${input.trim()}\`\`\``;
+
     setMessages(msgs => [...msgs, { role: 'user', content: input }]);
-    sendMessage(input);
+    sendMessage(modifiedPrompt);
     setInput('');
   }
 
@@ -198,8 +203,9 @@ function ChatApp() {
       <Card className="chat-card">
         <CardHeader>
           <CardTitle>
-            <span className="logo">🤖</span> Chat Ally
+            <span className="logo">🤖</span> Chat Ally Asker
           </CardTitle>
+          
         </CardHeader>
         <CardContent>
           <div className="chat-messages">

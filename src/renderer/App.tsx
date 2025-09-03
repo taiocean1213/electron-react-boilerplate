@@ -94,7 +94,7 @@ function ChatApp() {
     if (!input.trim() || !model) return;
 
     // Now add the multilined engineered prompt to messages
-    modifiedPrompt = `
+    const modifiedPrompt = `
       Please help me generate 5 questions to clarify the following. This is so that the user can generate better decisions. Only generate the questions and put each into a new lines. DO NOT generate statements. You should EXPLAIN the reason for asking the questions. Assume the following is what the user inputed and told you to respond to: \`\`\`${input.trim()}\`\`\``;
 
     setMessages(msgs => [...msgs, { role: 'user', content: input }]);

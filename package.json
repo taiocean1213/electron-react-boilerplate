@@ -1,5 +1,5 @@
 {
-  "name": "electron-react-boilerplate",
+  "name": "chat-ally-asker",
   "description": "A foundation for scalable desktop apps",
   "keywords": [
     "electron",
@@ -21,11 +21,7 @@
     "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
   },
   "license": "MIT",
-  "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
-  },
+  "author": "Electron React Boilerplate Maintainers <electronreactboilerplate@gmail.com> (https://electron-react-boilerplate.js.org)",
   "contributors": [
     {
       "name": "Amila Welihinda",
@@ -261,5 +257,6 @@
       ".erb/dll/**"
     ],
     "logLevel": "quiet"
-  }
+  },
+  "version": "1.0.0"
 }

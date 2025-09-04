@@ -221,7 +221,7 @@ function ChatApp() {
             <Input
               value={input}
               onChange={handleInput}
-              placeholder="  Type for clarification questions..."
+              placeholder="Type for clarification questions..."
               disabled={loading || !model}
               className="chat-input"
               autoFocus
